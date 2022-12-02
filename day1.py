@@ -2,7 +2,7 @@ def part1():
     print("Part 1: " + str(totals[0]))
 
 def part2():
-    print("Part 1: " + str(totals[0] + totals[1] + totals[2]))
+    print("Part 2: " + str(totals[0] + totals[1] + totals[2]))
 
 
 def loadData():
