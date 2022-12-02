@@ -12,7 +12,6 @@ def loadData():
     lines = file.readlines()
 
     runningTotal = 0
-    totals = []
 
     for line in lines:
         if (line.strip() == ''):
@@ -24,7 +23,7 @@ def loadData():
 
     totals.sort(reverse = True)
 
-
+totals = []
 loadData()
 part1()
 part2()
