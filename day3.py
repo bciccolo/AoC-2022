@@ -62,7 +62,7 @@ def part2():
     letter = findBadge(group)
     sum += getPriority(letter)
 
-    print("Part 1: " + str(sum))
+    print("Part 2: " + str(sum))
 
 
 part1()
