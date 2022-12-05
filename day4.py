@@ -39,7 +39,7 @@ def part2():
         if (not (elf1[LOW] > elf2[HIGH] or elf1[HIGH] < elf2[LOW])):
             count = count + 1
 
-    print("Part 3: " + str(count))
+    print("Part 2: " + str(count))
 
 
 loadData()
