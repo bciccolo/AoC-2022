@@ -25,7 +25,6 @@ def initializeStacks():
              ['D', 'S', 'M', 'P', 'F', 'N', 'G', 'Z'] ]
 
 
-
 def loadData():
     global moves
 
