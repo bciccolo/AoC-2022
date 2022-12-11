@@ -5,51 +5,43 @@ Y = 1
 
 instructions = []
 
-# Starting points for Head and Tail
-head = (0, 0)
-tail = (0, 0)
 
-# Points the Tail has visited
-headVisits = { head }
-tailVisits = { tail }
-
-
-def updateTailPosition():
-    global head, tail
-
-    distance = ((head[X] - tail[X])**2 + (head[Y] - tail[Y])**2)**0.5
+def follow(leader, current):
+    distance = ((leader[X] - current[X])**2 + (leader[Y] - current[Y])**2)**0.5
 
     if (distance >= 2):
         # Veritical movement required
-        if (head[X] == tail[X]):
+        if (leader[X] == current[X]):
             # Up
-            if (head[Y] > tail[Y]):
-                tail = (tail[X], tail[Y] + 1)
+            if (leader[Y] > current[Y]):
+                current = (current[X], current[Y] + 1)
             # Down
             else:
-                tail = (tail[X], tail[Y] - 1)
+                current = (current[X], current[Y] - 1)
         # Horizontal movement required
-        elif (head[Y] == tail[Y]):
+        elif (leader[Y] == current[Y]):
             # Left
-            if (head[X] > tail[X]):
-                tail = (tail[X] + 1, tail[Y])
+            if (leader[X] > current[X]):
+                current = (current[X] + 1, current[Y])
             # Right
             else:
-                tail = (tail[X] - 1, tail[Y])
+                current = (current[X] - 1, current[Y])
         # Diagnol movement requirement
         else:
             # Up-right
-            if (head[X] > tail[X] and head[Y] > tail[Y]):
-                tail = (tail[X] + 1, tail[Y] + 1)
+            if (leader[X] > current[X] and leader[Y] > current[Y]):
+                current = (current[X] + 1, current[Y] + 1)
             # Down-right
-            elif (head[X] > tail[X] and head[Y] < tail[Y]):
-                tail = (tail[X] + 1, tail[Y] - 1)
+            elif (leader[X] > current[X] and leader[Y] < current[Y]):
+                current = (current[X] + 1, current[Y] - 1)
             # Down-left
-            elif (head[X] < tail[X] and head[Y] < tail[Y]):
-                tail = (tail[X] - 1, tail[Y] - 1)
+            elif (leader[X] < current[X] and leader[Y] < current[Y]):
+                current = (current[X] - 1, current[Y] - 1)
             # Up-left
             else:
-                tail = (tail[X] - 1, tail[Y] + 1)
+                current = (current[X] - 1, current[Y] + 1)
+
+    return current
 
 
 def loadData(fileName):
@@ -62,8 +54,26 @@ def loadData(fileName):
     # pprint(instructions)
 
 
+def step(head, direction):
+    if (direction == 'U'):
+        head = (head[X], head[Y] + 1)
+    elif (direction == 'D'):
+        head = (head[X], head[Y] - 1)
+    elif (direction == 'L'):
+        head = (head[X] - 1, head[Y])
+    else: # direction == 'R'
+        head = (head[X] + 1, head[Y])
+
+    return head
+
+
 def part1():
-    global head
+    # Starting points for Head and Tail
+    head = (0, 0)
+    tail = (0, 0)
+
+    # Points the Tail has visited
+    tailVisits = { tail }
 
     for instruction in instructions:
         direction = instruction[0]
@@ -72,33 +82,55 @@ def part1():
         # print('====' + str(instruction) + '====')
 
         for i in range(count):
-            # Move the head
-            if (direction == 'U'):
-                head = (head[X], head[Y] + 1)
-            elif (direction == 'D'):
-                head = (head[X], head[Y] - 1)
-            elif (direction == 'L'):
-                head = (head[X] - 1, head[Y])
-            else: # direction == 'R'
-                head = (head[X] + 1, head[Y])
-
-            # Move the tail (if necessary)
-            updateTailPosition()
+            # Move the Head and the Tail follows
+            head = step(head, direction)
+            tail = follow(head, tail)
 
             # print('move: ' + str(i) + ' - H: ' + str(head) + ', T: ' + str(tail))
 
-            # Update the set of points visited by the tail
-            headVisits.add(head)
+            # Update the set of points visited by the Tail
             tailVisits.add(tail)
 
-    pprint(tailVisits)
+    # pprint(tailVisits)
 
-    # 9348 - too high
     print("Part 1: " + str(len(tailVisits)))
 
 
 def part2():
-    print("Part 2: " + str(0))
+    # Starting points for Head and Tail
+    head = (0, 0)
+    tailKnots = []
+    for i in range(9):
+        tailKnots.append((0, 0))
+
+    # Points the Tail has visited
+    tailVisits = { (0, 0) }
+
+    for instruction in instructions:
+        direction = instruction[0]
+        count = instruction[1]
+
+        # print('====' + str(instruction) + '====')
+
+        for i in range(count):
+            # Move the Head and the Tail follows
+            head = step(head, direction)
+
+            leader = head
+            for i in range(len(tailKnots)):
+                next = tailKnots[i]
+                replacement = follow(leader, next)
+                tailKnots[i] = replacement
+                leader = replacement
+
+            # print('move: ' + str(i) + ' - H: ' + str(head) + ', T: ' + str(tail))
+
+            # Update the set of points visited by the Tail
+            tailVisits.add(tailKnots[len(tailKnots) - 1])
+
+    # pprint(tailVisits)
+
+    print("Part 2: " + str(len(tailVisits)))
 
 
 loadData('day9.dat')
