@@ -32,7 +32,7 @@ def part1():
             cycle += 1
             signalStrength += checkSignal(cycle, registerX)
 
-    print("Part 1: " + str(signalStrength))
+    print('Part 1: ' + str(signalStrength))
 
 
 def part2():
@@ -67,8 +67,7 @@ def part2():
             signalStrength += checkSignal(cycle, registerX)
             updateCrt(crt, cycle, registerX)
 
-
-    print("Part 2:")
+    print('Part 2:')
     for row in crt:
         print(''.join(row))
 
@@ -76,15 +75,13 @@ def part2():
 def updateCrt(crt, cycle, register):
     cycle -= 1
     row = math.floor(cycle / len(crt[0]))
-    print(str(cycle) + " is in row " + str(row))
+    # print(str(cycle) + ' is in row ' + str(row))
     column = cycle % len(crt[0])
-
-    # print(str(cycle) + ' is row ' + str(row) + ' and col ' + str(column))
     if (abs(column - register) < 2):
         crt[row][column] = '#'
 
 
-dataFile = ('day10.dat')
+dataFile = 'day10.dat'
 
 part1()
 part2()
