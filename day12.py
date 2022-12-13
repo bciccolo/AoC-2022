@@ -1,5 +1,36 @@
 from pprint import pprint
 
+def findPathsToEnd(row, column, steps, depth):
+    global heightMap, end, paths
+
+    point = (row, column)
+
+    if (point not in steps):
+        # print('Point ' + str(point) + " @ depth " + str(depth))
+        steps.append(point)
+
+        currentHeight = heightMap[row][column]
+
+        if (row == end[0] and column == end[1]):
+            paths.append(steps)
+        else:
+            # West
+            if (column > 0 and heightMap[row][column - 1] - currentHeight <= 1):
+                findPathsToEnd(row, column - 1, steps.copy(), depth + 1)
+
+            # East
+            if (column < len(heightMap[0]) - 1 and heightMap[row][column + 1] - currentHeight <= 1):
+                findPathsToEnd(row, column + 1, steps.copy(), depth + 1)
+
+            # South
+            if (row < len(heightMap) - 1 and heightMap[row + 1][column] - currentHeight <= 1):
+                findPathsToEnd(row + 1, column, steps.copy(), depth + 1)
+
+            # West
+            if (row > 0 and heightMap[row - 1][column] - currentHeight <= 1):
+                findPathsToEnd(row - 1, column, steps.copy(), depth + 1)
+
+
 def loadData(dataFile):
     global heightMap, start, end
 
@@ -35,9 +66,17 @@ def loadData(dataFile):
 
 
 def part1():
-    steps = 0
+    global paths
 
-    print('Part 1: ' + str(steps))
+    findPathsToEnd(start[0], start[1], [], 0)
+
+    minSteps = len(paths[0])
+    for path in paths:
+        if (len(path) < minSteps):
+            minSteps = len(path)
+            # pprint(path)
+
+    print('Part 1: ' + str(minSteps - 1)) # Subtract 1 to ignore start point
 
 
 def part2():
@@ -47,6 +86,7 @@ def part2():
 heightMap = []
 start = (0, 0)
 end = (0, 0)
+paths = []
 loadData('day12-snippet.dat')
 
 part1()
