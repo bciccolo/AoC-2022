@@ -45,7 +45,7 @@ def loadData(dataFile):
     # print("End: " + str(end))
 
 
-def part1():
+def updateDistanceGrid():
     global heightGrid, distanceGrid
 
     maxRow = len(distanceGrid)
@@ -87,11 +87,22 @@ def part1():
     # for distances in distanceGrid:
     #     print(''.join([ '.' if num == 999 else str(num) for num in distances]))
 
+
+def part1():
     print('Part 1: ' + str(distanceGrid[start[0]][start[1]]))
 
 
 def part2():
-    print('Part 2: NOT READY')
+    minDistance = 999
+
+    for row in range(len(distanceGrid)):
+        for col in range(len(distanceGrid[0])):
+            if (heightGrid[row][col] == 0):
+                distance = distanceGrid[row][col]
+                if (distance < minDistance):
+                    minDistance = distance
+
+    print('Part 2: ' + str(minDistance))
 
 
 heightGrid = []
@@ -99,7 +110,8 @@ distanceGrid = []
 start = (0, 0)
 end = (0, 0)
 paths = []
-loadData('day12.dat')
+loadData('day12-snippet.dat')
+updateDistanceGrid()
 
 part1()
 part2()
