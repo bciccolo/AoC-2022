@@ -1,38 +1,8 @@
 from pprint import pprint
 
-def findPathsToEnd(row, column, steps, depth):
-    global heightMap, end, paths
-
-    point = (row, column)
-
-    if (point not in steps):
-        # print('Point ' + str(point) + " @ depth " + str(depth))
-        steps.append(point)
-
-        currentHeight = heightMap[row][column]
-
-        if (row == end[0] and column == end[1]):
-            paths.append(steps)
-        else:
-            # West
-            if (column > 0 and heightMap[row][column - 1] - currentHeight <= 1):
-                findPathsToEnd(row, column - 1, steps.copy(), depth + 1)
-
-            # East
-            if (column < len(heightMap[0]) - 1 and heightMap[row][column + 1] - currentHeight <= 1):
-                findPathsToEnd(row, column + 1, steps.copy(), depth + 1)
-
-            # South
-            if (row < len(heightMap) - 1 and heightMap[row + 1][column] - currentHeight <= 1):
-                findPathsToEnd(row + 1, column, steps.copy(), depth + 1)
-
-            # West
-            if (row > 0 and heightMap[row - 1][column] - currentHeight <= 1):
-                findPathsToEnd(row - 1, column, steps.copy(), depth + 1)
-
 
 def loadData(dataFile):
-    global heightMap, start, end
+    global heightGrid, distanceGrid, start, end
 
     y = 0
     x = 0
@@ -40,54 +10,96 @@ def loadData(dataFile):
     file = open(dataFile, 'r')
     lines = file.readlines()
     for line in lines:
-        row = []
+        heights = []
+        distances = []
 
         for letter in line.strip():
+            # 'a' = 0, 'z' = 25
             height = ord(letter) - ord('a')
+            distance = 999
 
             if (letter == 'S'):
                 start = (y , x)
+                # start height = 'a'
                 height = 0
             elif (letter == 'E'):
                 end = (y, x)
-                height = 26
+                # end height = 'z'
+                height = 25
+                distance = 0
 
-            row.append(height)
+            heights.append(height)
+            distances.append(distance)
+
             x += 1
 
-        heightMap.append(row)
+        heightGrid.append(heights)
+        distanceGrid.append(distances)
 
         y += 1
         x = 0
 
-    # pprint(heightMap)
+    # pprint(heightGrid)
+    # pprint(distanceGrid)
     # print("Start: " + str(start))
     # print("End: " + str(end))
 
 
 def part1():
-    global paths
+    global heightGrid, distanceGrid
 
-    findPathsToEnd(start[0], start[1], [], 0)
+    maxRow = len(distanceGrid)
+    maxCol = len(distanceGrid[0])
 
-    minSteps = len(paths[0])
-    for path in paths:
-        if (len(path) < minSteps):
-            minSteps = len(path)
-            # pprint(path)
+    distance = 0
+    moreToCheck = True
+    while (moreToCheck):
+        moreToCheck = False
 
-    print('Part 1: ' + str(minSteps - 1)) # Subtract 1 to ignore start point
+        for row in range(maxRow):
+            for col in range(maxCol):
+                if (distanceGrid[row][col] == distance):
+                    # Check and mark neighbors
+                    height = heightGrid[row][col]
+
+                    # Up/North
+                    if (row > 0 and height - heightGrid[row - 1][col] <= 1 and distanceGrid[row - 1][col] == 999):
+                        distanceGrid[row - 1][col] = distance + 1
+                        moreToCheck = True
+
+                    # Down/South
+                    if (row < maxRow - 1 and height - heightGrid[row + 1][col] <= 1 and distanceGrid[row + 1][col] == 999):
+                        distanceGrid[row + 1][col] = distance + 1
+                        moreToCheck = True
+
+                    # Right/East
+                    if (col < maxCol - 1 and height - heightGrid[row][col + 1] <= 1 and distanceGrid[row][col + 1] == 999):
+                        distanceGrid[row][col + 1] = distance + 1
+                        moreToCheck = True
+
+                    # Left/West
+                    if (col > 0 and height - heightGrid[row][col - 1] <= 1 and distanceGrid[row][col - 1] == 999):
+                        distanceGrid[row][col - 1] = distance + 1
+                        moreToCheck = True
+
+        distance += 1
+
+    # for distances in distanceGrid:
+    #     print(''.join([ '.' if num == 999 else str(num) for num in distances]))
+
+    print('Part 1: ' + str(distanceGrid[start[0]][start[1]]))
 
 
 def part2():
     print('Part 2: NOT READY')
 
 
-heightMap = []
+heightGrid = []
+distanceGrid = []
 start = (0, 0)
 end = (0, 0)
 paths = []
-loadData('day12-snippet.dat')
+loadData('day12.dat')
 
 part1()
 part2()
