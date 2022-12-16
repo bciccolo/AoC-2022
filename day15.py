@@ -1,21 +1,22 @@
-DATA_FILE = 'day15.dat'
-
-X = 0
-Y = 1
+DATA_FILE = 'day15-snippet.dat'
+SEARCH_ROW = 10 #2000000
 
 SENSOR = 0
 BEACON = 1
 DISTANCE = 2
 
-grid = []
+X = 0
+Y = 1
+
+groups = []
+
+minX = 0
+maxX = 0
+minY = 0
+maxY = 0
 
 def loadData():
-    minX = 1000000
-    maxX = -minX
-    minY = minX
-    maxY = maxX
-
-    groups = []
+    global groups, minX, maxX, minY, maxY
 
     file = open(DATA_FILE, 'r')
     lines = file.readlines()
