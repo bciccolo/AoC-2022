@@ -1,5 +1,5 @@
-DATA_FILE = 'day15-snippet.dat'
-SEARCH_ROW = 10 #2000000
+DATA_FILE = 'day15.dat'
+SEARCH_ROW_INDEX = 2000000
 
 SENSOR = 0
 BEACON = 1
@@ -34,8 +34,43 @@ def loadData():
     minY = min([min((group[SENSOR][Y], group[BEACON][Y])) for group in groups])
     maxY = max([max((group[SENSOR][Y], group[BEACON][Y])) for group in groups])
 
-    print('X range: ' + str(minX) + ':' + str(maxX))
-    print('Y range: ' + str(minY) + ':' + str(maxY))
+    # Extend X range in both directions by the largest distance
+    maxDistance = max([group[DISTANCE] for group in groups])
+    minX -= maxDistance
+    maxX += maxDistance
 
+    # print('X range: ' + str(minX) + ':' + str(maxX))
+    # print('Y range: ' + str(minY) + ':' + str(maxY))
+
+
+def part1():
+    searchRow = [0 for i in range(maxX - minX + 1)]
+
+    # Step 1: Mark all spaces that can be reached by at least one sensor
+    for group in groups:
+        sensor = group[SENSOR]
+        maxDistance = group[DISTANCE]
+
+        requiredRange = abs(sensor[Y] - SEARCH_ROW_INDEX)
+
+        if (maxDistance >= requiredRange):
+            searchRow[sensor[X] - minX] = 1
+
+            xRange = maxDistance - requiredRange
+            xRangeMin = sensor[X] - xRange
+            xRangeMax = sensor[X] + xRange
+            for x in range(xRangeMin, xRangeMax + 1):
+                searchRow[x - minX] = 1
+
+    # Step 2: Clear any spaces that contain a known beacon
+    for group in groups:
+        beacon = group[BEACON]
+        if (beacon[Y] == SEARCH_ROW_INDEX):
+            searchRow[beacon[X] - minX] = 0
+
+    # print(searchRow)
+
+    print("Part 1: " + str(sum(searchRow)))
 
 loadData()
+part1()
