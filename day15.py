@@ -1,5 +1,12 @@
+import time
+
+# DATA_FILE = 'day15-snippet.dat'
+# SEARCH_ROW_INDEX = 10
+# LIMIT = 20
+
 DATA_FILE = 'day15.dat'
-SEARCH_ROW_INDEX = 2000000
+SEARCH_ROW_INDEX = 2_000_000
+LIMIT = 4_000_000
 
 SENSOR = 0
 BEACON = 1
@@ -72,5 +79,54 @@ def part1():
 
     print("Part 1: " + str(sum(searchRow)))
 
+
+def part2():
+    tic = time.perf_counter()
+
+    for y in range(LIMIT + 1):
+        searchRow = [0 for i in range(LIMIT + 1)]
+
+        # Step 1: Mark all spaces that can be reached by at least one sensor
+        for group in groups:
+            sensor = group[SENSOR]
+            maxDistance = group[DISTANCE]
+
+            requiredRange = abs(sensor[Y] - y)
+
+            if (maxDistance >= requiredRange):
+                if (sensor[X] >= 0 and sensor[X] <= LIMIT):
+                    searchRow[sensor[X]] = 1
+
+                xRange = maxDistance - requiredRange
+                xRangeMin = max(sensor[X] - xRange, 0)
+                xRangeMax = min(sensor[X] + xRange, LIMIT)
+                for x in range(xRangeMin, xRangeMax + 1):
+                    searchRow[x] = 1
+
+        # Step 2: Mark any spaces that contain a known sensor or beacon
+        for group in groups:
+            sensor = group[SENSOR]
+            if (sensor[Y] == y and sensor[X] >= 0 and sensor[X] <= LIMIT):
+                searchRow[sensor[X]] = 5
+
+            beacon = group[BEACON]
+            if (beacon[Y] == y and beacon[X] >= 0 and beacon[X] <= LIMIT):
+                searchRow[beacon[X]] = 3
+
+        # Step 3: Did we find the opening?
+        if (0 in searchRow):
+            x = searchRow.index(0)
+            frequency = 4_000_000 * x + y
+            print("Part 2: " + str(frequency))
+            break
+
+        if (y % 100 == 0):
+            print(str(y) + '...')
+
+    toc = time.perf_counter()
+    print(f"Ran part 2 in {toc - tic:0.4f} seconds")
+
+
 loadData()
 part1()
+part2()
