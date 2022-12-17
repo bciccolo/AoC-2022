@@ -1,4 +1,5 @@
 import time
+from bitarray import bitarray
 
 # DATA_FILE = 'day15-snippet.dat'
 # SEARCH_ROW_INDEX = 10
@@ -60,7 +61,7 @@ def part1():
 
         requiredRange = abs(sensor[Y] - SEARCH_ROW_INDEX)
 
-        if (maxDistance >= requiredRange):
+        if maxDistance >= requiredRange:
             searchRow[sensor[X] - minX] = 1
 
             xRange = maxDistance - requiredRange
@@ -72,7 +73,7 @@ def part1():
     # Step 2: Clear any spaces that contain a known beacon
     for group in groups:
         beacon = group[BEACON]
-        if (beacon[Y] == SEARCH_ROW_INDEX):
+        if beacon[Y] == SEARCH_ROW_INDEX:
             searchRow[beacon[X] - minX] = 0
 
     # print(searchRow)
@@ -81,10 +82,11 @@ def part1():
 
 
 def part2():
-    tic = time.perf_counter()
+    # tic = time.perf_counter()
 
     for y in range(LIMIT + 1):
-        searchRow = [0 for i in range(LIMIT + 1)]
+        a = bitarray(LIMIT + 1)
+        a.setall(True)
 
         # Step 1: Mark all spaces that can be reached by at least one sensor
         for group in groups:
@@ -92,39 +94,29 @@ def part2():
             maxDistance = group[DISTANCE]
 
             requiredRange = abs(sensor[Y] - y)
-
-            if (maxDistance >= requiredRange):
-                if (sensor[X] >= 0 and sensor[X] <= LIMIT):
-                    searchRow[sensor[X]] = 1
-
+            if maxDistance >= requiredRange:
                 xRange = maxDistance - requiredRange
                 xRangeMin = max(sensor[X] - xRange, 0)
                 xRangeMax = min(sensor[X] + xRange, LIMIT)
-                for x in range(xRangeMin, xRangeMax + 1):
-                    searchRow[x] = 1
+                a[xRangeMin:xRangeMax + 1] = False
 
-        # Step 2: Mark any spaces that contain a known sensor or beacon
-        for group in groups:
-            sensor = group[SENSOR]
-            if (sensor[Y] == y and sensor[X] >= 0 and sensor[X] <= LIMIT):
-                searchRow[sensor[X]] = 5
-
-            beacon = group[BEACON]
-            if (beacon[Y] == y and beacon[X] >= 0 and beacon[X] <= LIMIT):
-                searchRow[beacon[X]] = 3
-
-        # Step 3: Did we find the opening?
-        if (0 in searchRow):
-            x = searchRow.index(0)
+        # Step 2: Check if we found the opening
+        if a.any():
+            x = 0
+            for bit in a:
+                if bit:
+                    break
+                x += 1
             frequency = 4_000_000 * x + y
             print("Part 2: " + str(frequency))
             break
 
-        if (y % 100 == 0):
-            print(str(y) + '...')
+        # if y % 100_000 == 0:
+        #     toc = time.perf_counter()
+        #     print(f"Checked {y} rows in {toc - tic:0.4f} seconds")
 
-    toc = time.perf_counter()
-    print(f"Ran part 2 in {toc - tic:0.4f} seconds")
+    # toc = time.perf_counter()
+    # print(f"Found answer in {toc - tic:0.4f} seconds")
 
 
 loadData()
