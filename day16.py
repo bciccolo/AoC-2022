@@ -16,18 +16,25 @@ valves = []
 # Cache for distances between two valves
 distanceMaps = {}
 
-def chooseNextValve(startValve, timeRemaining):
-    maxPerformance = 0
+def chooseNextValve(startValve):
     nextValve = None
+    nextSteps = 0
 
     # Select the next valve based on performance over remaining time
     for valve in valves:
-        if not valve.open:
+        if not valve.open and valve.flowRate > 0:
             steps = distanceMaps[startValve.name][valve.name]
-            performance = valve.flowRate * (timeRemaining - steps - 1)
-            if performance > maxPerformance:
-                maxPerformance = performance
+
+            nextPerformance = 0 if nextValve is None else nextValve.flowRate
+            thisPerformance = valve.flowRate
+            if steps < nextSteps:
+                thisPerformance += (nextSteps - steps) * valve.flowRate
+            elif nextSteps < steps and nextPerformance > 0:
+                nextPerformance += (steps - nextSteps) * nextValve.flowRate
+
+            if nextValve is None or thisPerformance > nextPerformance:
                 nextValve = valve
+                nextSteps = steps
 
     return nextValve
 
@@ -91,7 +98,7 @@ def part1():
     currentValve = valves[0]
 
     while timer > 0 and currentValve:
-        valve = chooseNextValve(currentValve, timer)
+        valve = chooseNextValve(currentValve)
 
         if valve:
             steps = distanceMaps[currentValve.name][valve.name]
@@ -100,6 +107,8 @@ def part1():
             timer -= 1      # Time to open valve
 
             totalPressure += timer * valve.flowRate
+
+            print('Opening valve ' + valve.name + ' at minute ' + str(30 - timer) + ' with flow rate ' + str(valve.flowRate) + ', net release ' + str(timer * valve.flowRate))
 
             valve.open = True
 
