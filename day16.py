@@ -20,7 +20,6 @@ def chooseNextValve(startValve):
     nextValve = None
     nextSteps = 0
 
-    # Select the next valve based on performance over remaining time
     for valve in valves:
         if not valve.open and valve.flowRate > 0:
             steps = distanceMaps[startValve.name][valve.name]
