@@ -1,15 +1,14 @@
-def findMarker(count):
-    file = open('day6-snippet.dat', 'r')
+def findSignal(length):
+    file = open('day6.dat', 'r')
     line = file.readline().strip()
 
-    for i in range(len(line) - (count - 1)):
-        chunk = line[i:i + count]
+    for i in range(len(line) - (length - 1)):
+        chunk = line[i:i + length]
 
-        unique = set([c for c in chunk])
-        if (len(unique) == count):
-            print(i + count)
-            break
+        unique_count = len(set([c for c in chunk]))
+        if (unique_count == length):
+            return i + length
 
 
-findMarker(4)
-findMarker(14)
+print("Part 1: " + str(findSignal(4)))
+print("Part 2: " + str(findSignal(14)))
